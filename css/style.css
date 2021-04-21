@@ -307,6 +307,7 @@ button:hover {
 }
 
 .shirt-colors {
+  display: none;
   width: 100%;
 }
 
