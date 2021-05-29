@@ -5,11 +5,14 @@ Author: Julie Branyan
 */
 const jobRole = document.getElementById("title");
 const otherJobRoleDiv = document.querySelector(".otherJobRole");
+
 const shirtDesign = document.getElementById("design");
 const shirtColor = document.querySelector(".shirt-colors");
 const color = document.querySelector("#color");
+
 const activitiesInput = document.querySelectorAll('.activities input');
 const activities = document.querySelector('.activities');
+const activitiesCheckbox = document.querySelectorAll('input[type="checkbox"]');
 const p = document.querySelector('p.activities-cost');
 const paymentMethodDefault = document.querySelectorAll('#payment option');
 paymentMethodDefault[1].selected = true;
@@ -34,10 +37,13 @@ const activitiesHint = document.querySelector('#activities-hint');
 const zipCodeHint = document.querySelector('#zip-hint');
 let total = 0;
 
+//focus on the name field when the page loads
 document.getElementById("name").focus();
+
+//Hide the other job role when the page loads
 otherJobRoleDiv.style.display = 'none';
 
-
+//Hide or display the other field when "other" job role is selected
 jobRole.addEventListener('change', e =>{
   if(e.target.value == 'other'){
     if(otherJobRoleDiv.style.display == 'none'){
@@ -48,6 +54,7 @@ jobRole.addEventListener('change', e =>{
   }
 });
 
+//Based off the shirt selected, display the related shirt color
 shirtDesign.addEventListener('change', e =>{
   shirtColor.style.display = 'block';
   color.selectedIndex = 0;
@@ -65,6 +72,8 @@ shirtDesign.addEventListener('change', e =>{
   }
 });
 
+//add and subtract from the total based off of the activities select or removed
+//Log the updated total below the activities
 activities.addEventListener('change', e => {
 
   const selectedActivity = e.target;
@@ -82,9 +91,35 @@ activities.addEventListener('change', e => {
     } 
   } 
   p.innerHTML = `Total: $${total}`;
-  return total;
+  
+  //prevent users from booking activites at the same date and time
+  const activityDateTime = e.target.getAttribute('data-day-and-time');
+  const nameOfActivity = e.target.getAttribute('name');
+  
+  for(let i =0; i < activitiesCheckbox.length; i++){
+    const selectedActivityName = activitiesCheckbox[i].getAttribute('name');
+    const selectedActivityDate = activitiesCheckbox[i].getAttribute('data-day-and-time');
+    
+    if(nameOfActivity !== selectedActivityName && selectedActivityDate === activityDateTime){
+      activitiesCheckbox[i].parentElement.classList.add('disabled');
+      activitiesCheckbox[i].disabled = true;
+    } else {
+      activitiesCheckbox[i].parentElement.classList.add('enabled');
+      activitiesCheckbox[i].disabled = false;
+    }
+  }
 });
 
+for(let i=0; i < activitiesCheckbox.length; i++){
+  activitiesCheckbox[i].addEventListener('focus', e =>{
+    e.target.parentElement.classList.add('focus');
+  });
+  
+  activitiesCheckbox[i].addEventListener('blur', e =>{
+    e.target.parentElement.classList.remove('focus');
+  });
+}
+//Display the fields related to the payment type selected
 paymentMethod.addEventListener('change', e => {
   const selectedPayment = e.target.value;  
 
@@ -104,35 +139,67 @@ paymentMethod.addEventListener('change', e => {
   return selectedPayment;
 });
 
+function fieldsValid(e){
+  e.parentElement.classList.add('valid');
+  e.parentElement.classList.remove('not-valid');
+  e.parentElement.lastElementChild.hidden = true;
+}
+
+function fieldsInvalid(e){
+  e.parentElement.classList.add('not-valid');
+  e.parentElement.classList.remove('valid');
+  e.parentElement.lastElementChild.hidden = false;
+}
+
+
 const validateName = () =>{
   const nameIsValid = /^[a-zA-Z]+ ?[a-zA-Z]*? ?[a-zA-Z]*?$/.test(participantName.value);
-
+  if(nameIsValid){
+    fieldsValid(participantName);
+  } else{
+    fieldsInvalid(participantName);
+  }
   return nameIsValid;
 }
 
 const validateEmail = () =>{
   const emailIsValid = /^[^@]+@[^@.]+\.[a-z]+$/i.test(emailName.value);
-  
+  if(emailIsValid){
+    fieldsValid(emailName);
+  } else if(emailName.value.length == 0){
+    fieldsInvalid(emailName);
+    emailHint.innerHTML = 'Enter an email address.';
+  } else{
+    fieldsInvalid(emailName);
+    emailHint.innerHTML = 'Email address must be formatted correctly';
+  }
   return emailIsValid;
 }
 //validate activities are checked
 const validateActivities = () =>{
   const activitySelectionValid = total >= 100;
-  
   return activitySelectionValid;
 }
-
+ 
 //validate credit card number
 const validateCreditCardNumber = () =>{
   const creditCardNumberValid = /^([0-9]{13})(?:[0-9]{3})?/.test(creditCardNumber.value);
-  
+  if(creditCardNumberValid){
+    fieldsValid(creditCardNumber);
+  } else{
+    fieldsInvalid(creditCardNumber);
+  }
   return creditCardNumberValid;
 }
 
 //validate zip code
 const validateZipcode = () =>{
   const zipcodeValid = /^\d{5}$/.test(zipCode.value);
-  
+  if(zipcodeValid){
+    fieldsValid(zipCode);
+  } else{
+    fieldsInvalid(zipCode);
+  }
   return zipcodeValid;
 }
 
@@ -140,10 +207,14 @@ const validateZipcode = () =>{
 const validateCVV = () =>{
   // The "CVV" field must contain a 3 digit number.
   const cvvValid = /^\d{3}$/.test(cvv.value);
-  
+  if(cvvValid){
+    fieldsValid(cvv);
+  } else{
+    fieldsInvalid(cvv);
+  }
   return cvvValid;
 }
-
+//Upon form submission, validate whether the fields were input correctly
 form.addEventListener('submit', e => {
   if(!validateName()){
       e.preventDefault();
@@ -166,3 +237,23 @@ form.addEventListener('submit', e => {
   } 
 });
 
+//Keyup to listen for validation on email field
+participantName.addEventListener('keyup', () => {
+  validateName(participantName); 
+});
+
+emailName.addEventListener('keyup', () => {
+  validateEmail(emailName);
+});
+
+creditCardNumber.addEventListener('keyup', () => {
+  validateCreditCardNumber(creditCardNumber);
+});
+
+zipCode.addEventListener('keyup', () => {
+  validateZipcode(zipCode);
+});
+
+cvv.addEventListener('keyup', () => {
+  validateCVV(cvv);
+});
