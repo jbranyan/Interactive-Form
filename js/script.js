@@ -109,19 +109,19 @@ activities.addEventListener('change', e => {
     }
   }
 });
-
+//Highlight activities checkbox when user tabs through the fields
 for(let i=0; i < activitiesCheckbox.length; i++){
   activitiesCheckbox[i].addEventListener('focus', e =>{
     e.target.parentElement.classList.add('focus');
   });
-  
+  //Remove highlighting as user tabs through the fields
   activitiesCheckbox[i].addEventListener('blur', e =>{
     e.target.parentElement.classList.remove('focus');
   });
 }
 //Display the fields related to the payment type selected
 paymentMethod.addEventListener('change', e => {
-  const selectedPayment = e.target.value;  
+  const selectedPayment = e.target.value; 
 
   if(selectedPayment === 'paypal'){
       paypal.hidden = false;
@@ -138,20 +138,19 @@ paymentMethod.addEventListener('change', e => {
   }
   return selectedPayment;
 });
-
+//When fields are valid hide the error 
 function fieldsValid(e){
   e.parentElement.classList.add('valid');
   e.parentElement.classList.remove('not-valid');
   e.parentElement.lastElementChild.hidden = true;
 }
-
+//when fields are invalid, display the error
 function fieldsInvalid(e){
   e.parentElement.classList.add('not-valid');
   e.parentElement.classList.remove('valid');
   e.parentElement.lastElementChild.hidden = false;
 }
-
-
+//validate name entered is valid
 const validateName = () =>{
   const nameIsValid = /^[a-zA-Z]+ ?[a-zA-Z]*? ?[a-zA-Z]*?$/.test(participantName.value);
   if(nameIsValid){
@@ -161,7 +160,7 @@ const validateName = () =>{
   }
   return nameIsValid;
 }
-
+//validate email is entered correctly
 const validateEmail = () =>{
   const emailIsValid = /^[^@]+@[^@.]+\.[a-z]+$/i.test(emailName.value);
   if(emailIsValid){
@@ -181,9 +180,11 @@ const validateActivities = () =>{
   return activitySelectionValid;
 }
  
-//validate credit card number
+//validate credit card number is 13-16 digits
 const validateCreditCardNumber = () =>{
-  const creditCardNumberValid = /^([0-9]{13})(?:[0-9]{3})?/.test(creditCardNumber.value);
+  //Used assistance from stackexchange to understand how to add {13,16}$ digits in regex.
+  //https://stackoverflow.com/questions/19410950/regex-to-match-10-15-digit-number
+  const creditCardNumberValid = /^([0-9]{13,16}$)(?:[0-9]{3})?/.test(creditCardNumber.value);
   if(creditCardNumberValid){
     fieldsValid(creditCardNumber);
   } else{
@@ -192,7 +193,7 @@ const validateCreditCardNumber = () =>{
   return creditCardNumberValid;
 }
 
-//validate zip code
+//validate zip code is 5 digits
 const validateZipcode = () =>{
   const zipcodeValid = /^\d{5}$/.test(zipCode.value);
   if(zipcodeValid){
@@ -203,9 +204,8 @@ const validateZipcode = () =>{
   return zipcodeValid;
 }
 
-// validate CCV
+// validate CCV field contains a 3 digit number
 const validateCVV = () =>{
-  // The "CVV" field must contain a 3 digit number.
   const cvvValid = /^\d{3}$/.test(cvv.value);
   if(cvvValid){
     fieldsValid(cvv);
@@ -237,23 +237,23 @@ form.addEventListener('submit', e => {
   } 
 });
 
-//Keyup to listen for validation on email field
+//Keyup to listen for validation on name field
 participantName.addEventListener('keyup', () => {
   validateName(participantName); 
 });
-
+//Keyup to listen for validation on email field
 emailName.addEventListener('keyup', () => {
   validateEmail(emailName);
 });
-
+//Keyup to listen for validation on credit card field
 creditCardNumber.addEventListener('keyup', () => {
   validateCreditCardNumber(creditCardNumber);
 });
-
+//Keyup to listen for validation on zip code field
 zipCode.addEventListener('keyup', () => {
   validateZipcode(zipCode);
 });
-
+//Keyup to listen for validation on cvv field
 cvv.addEventListener('keyup', () => {
   validateCVV(cvv);
 });
