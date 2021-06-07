@@ -110,7 +110,6 @@ activities.addEventListener('change', e => {
       activitiesCheckbox[i].disabled = false;
     }
   }
-  return total;
 });
 
 //Highlight activities checkbox when user tabs through the fields
