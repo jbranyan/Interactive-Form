@@ -5,11 +5,9 @@ Author: Julie Branyan
 */
 const jobRole = document.getElementById("title");
 const otherJobRoleDiv = document.querySelector(".otherJobRole");
-
 const shirtDesign = document.getElementById("design");
 const shirtColor = document.querySelector(".shirt-colors");
 const color = document.querySelector("#color");
-
 const activitiesInput = document.querySelectorAll('.activities input');
 const activities = document.querySelector('.activities');
 const actyName= document.querySelector('#activities');
